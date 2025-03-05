@@ -1,0 +1,4 @@
+vq3 1v1 server with a healthy set of maps.
+weaponrespawn 15, but 5 on hub3aeroq3 and pro-q3dm6
+
+Behave badly to get banned.

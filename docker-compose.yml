@@ -1,0 +1,41 @@
+volumes:
+  quake3:
+  quake3-download-caddy_data:
+  quake3-download-caddy_config:
+
+services:
+  quake3:
+    build: .
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    ports:
+      - 27960:${LISTEN_PORT:-27960}/udp
+    volumes:
+      - ./entrypoint.sh:/entrypoint.sh:ro
+      - ./baseq3/pak0.pk3:/opt/quake3/baseq3/pak0.pk3:ro
+      - ./cpma/server.cfg:/opt/quake3/cpma/server.cfg:ro
+      - ./cpma/cfg-maps:/opt/quake3/cpma/cfg-maps:ro
+      - ./cpma/modes:/opt/quake3/cpma/modes:ro
+      - quake3:/root/.q3a/
+      # this is ok as we only should ever write to cpma/
+      - ./download/baseq3:/root/.q3a/baseq3:ro
+      - ./${MOTD_FILE}:/root/.q3a/cpma/${MOTD_FILE}:ro
+
+    env_file:
+      - ./.env
+
+
+  quake3-download:
+    image: $CADDY_IMAGE
+    restart: unless-stopped
+    networks:
+      - reverse-proxy
+    volumes:
+      - quake3-download-caddy_config:/config:rw
+      - quake3-download-caddy_data:/data:rw
+      - ./download.Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./download/:${WEB_ROOT}:ro
+
+    environment:
+      WEB_ROOT: ${WEB_ROOT}

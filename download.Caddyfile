@@ -1,0 +1,9 @@
+:80
+
+encode gzip
+
+root * /var/www/html
+file_server
+log {
+	level debug
+}
